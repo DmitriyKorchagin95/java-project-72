@@ -4,6 +4,6 @@ run-dist: # run app
 	./app/build/install/app/bin/app
 
 build: # build app
-	cd app  && ./gradlew clean build
+	cd app  && ./gradlew clean shadowJar
 
 .PHONY: build
