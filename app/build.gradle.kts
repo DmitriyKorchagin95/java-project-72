@@ -1,6 +1,7 @@
 plugins {
+    id("com.gradleup.shadow")
     id("com.github.ben-manes.versions")
-    id("org.sonarqube") version "7.0.0.6105"
+    id("org.sonarqube") version "7.2.3.7755"
     jacoco
     checkstyle
     application
@@ -21,6 +22,11 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
+    implementation(libs.javalin)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    implementation(libs.slf4j.api)
+    runtimeOnly(libs.slf4j.simple)
 }
 
 tasks.test {
@@ -36,9 +42,13 @@ tasks.jacocoTestReport {
     }
 }
 
+tasks.shadowJar {
+    archiveClassifier.set("")
+}
+
 sonar {
     properties {
-        property("sonar.projectKey", "DmitriyKorchagin95_java-project-78")
+        property("sonar.projectKey", "DmitriyKorchagin95_java-project-72")
         property("sonar.organization", "dmitriykorchagin95")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")

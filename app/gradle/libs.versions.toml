@@ -6,6 +6,8 @@ com-github-ben-manes-versions = { id = "com.github.ben-manes.versions", version 
 
 org-sonarqube = { id = "org.sonarqube", version = "7.2.0.6526" }
 
+com-gradleup-shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
+
 [versions]
 
 junit = "6.1.0-M1"
@@ -17,3 +19,13 @@ junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 
 junit-platform-launcher = "org.junit.platform:junit-platform-launcher:6.1.0-M1"
+
+javalin = "io.javalin:javalin:7.1.0"
+
+slf4j-api = "org.slf4j:slf4j-api:2.0.13"
+
+logback-classic = "ch.qos.logback:logback-classic:1.5.32"
+
+slf4j-simple = "org.slf4j:slf4j-simple:2.0.17"
+
+lombok = "org.projectlombok:lombok:1.18.30"
