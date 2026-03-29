@@ -42,10 +42,6 @@ tasks.jacocoTestReport {
     }
 }
 
-tasks.shadowJar {
-    archiveClassifier.set("")
-}
-
 sonar {
     properties {
         property("sonar.projectKey", "DmitriyKorchagin95_java-project-72")
