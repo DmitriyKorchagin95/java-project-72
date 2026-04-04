@@ -22,12 +22,22 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
-    implementation(libs.javalin)
+
+    implementation("io.javalin:javalin:5.6.3")
+    implementation("io.javalin:javalin-rendering:5.6.3")
+
+    implementation("gg.jte:jte:3.2.3")
+
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("com.h2database:h2:2.4.240")
+
     implementation("org.postgresql:postgresql:42.7.10")
+
+    implementation("org.webjars:bootstrap:5.3.8")
+
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+
     implementation(libs.slf4j.api)
     runtimeOnly(libs.slf4j.simple)
 }

@@ -2,8 +2,12 @@ package hexlet.code;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -15,10 +19,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class App {
-    public static void main(String[] args) throws SQLException, IOException {
+
+    public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
         app.start(getPort());
-        log.info("Application started");
+        log.info("Application started on port {}", getPort());
     }
 
     private static int getPort() {
@@ -27,7 +32,9 @@ public class App {
     }
 
     private static String getDatabaseUrl() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+        var databaseUrl = System.getenv()
+                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+        return String.format("%s;DB_CLOSE_DELAY=-1;", databaseUrl);
     }
 
     private static String readResourceFile(String fileName) throws IOException {
@@ -40,11 +47,11 @@ public class App {
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getDatabaseUrl());
+        hikariConfig.setMaximumPoolSize(4);
+
         var dataSource = new HikariDataSource(hikariConfig);
+
         var sql = readResourceFile("schema.sql");
-
-        log.info(sql);
-
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
             statement.execute(sql);
@@ -52,10 +59,20 @@ public class App {
 
         BaseRepository.dataSource = dataSource;
 
-
         var app = Javalin.create(config -> {
-            config.routes.get("/", ctx -> ctx.result("Hello World"));
+            config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
+
+        app.get("/", ctx ->
+                ctx.render("index.jte")
+        );
+
         return app;
+    }
+
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        var resolver = new ResourceCodeResolver("templates", classLoader);
+        return TemplateEngine.create(resolver, ContentType.Html);
     }
 }
