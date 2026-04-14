@@ -22,19 +22,16 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
-
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.3.2")
+    testImplementation("org.assertj:assertj-core:4.0.0-M1")
+    testImplementation("io.javalin:javalin-testtools:5.6.3")
     implementation("io.javalin:javalin:5.6.3")
     implementation("io.javalin:javalin-rendering:5.6.3")
-
     implementation("gg.jte:jte:3.2.3")
-
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("com.h2database:h2:2.4.240")
-
     implementation("org.postgresql:postgresql:42.7.10")
-
     implementation("org.webjars:bootstrap:5.3.8")
-
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 

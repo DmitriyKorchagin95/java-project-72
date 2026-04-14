@@ -6,6 +6,7 @@ build
 
 **/logs/
 
+jte-classes
 .DS_Store
 .settings
 bin

@@ -34,9 +34,8 @@ public class App {
     }
 
     private static String getDatabaseUrl() {
-        var databaseUrl = System.getenv()
-                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
-        return String.format("%s;DB_CLOSE_DELAY=-1;", databaseUrl);
+        return System.getenv()
+                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
     }
 
     private static String readResourceFile(String fileName) throws IOException {

@@ -13,7 +13,7 @@ content = @`
             <tr>
                 <th class="col-1">ID</th>
                 <th>Имя</th>
-                <th closs="col-2">Последняя проверка</th>
+                <th class="col-2">Последняя проверка</th>
                 <th class="col-1">Код ответа</th>
             </tr>
             </thead>

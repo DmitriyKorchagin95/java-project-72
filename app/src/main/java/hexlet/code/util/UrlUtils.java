@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class UrlUtils {
+public final class UrlUtils {
 
     private UrlUtils() {
     }
