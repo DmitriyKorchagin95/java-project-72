@@ -1,90 +1,91 @@
 package hexlet.code.repository;
 
+import hexlet.code.model.Url;
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import hexlet.code.model.Url;
-
+@Slf4j
 public class UrlRepository extends BaseRepository {
-    public static void save(Url url) throws SQLException {
+    public static Url save(Url url) throws SQLException {
         var sql = "INSERT INTO urls (name) VALUES (?)";
 
         try (
                 var conn = dataSource.getConnection();
-                var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-            preparedStatement.setString(1, url.getName());
-            preparedStatement.executeUpdate();
+            stmt.setString(1, url.getName());
+            stmt.executeUpdate();
 
-            var generatedKeys = preparedStatement.getGeneratedKeys();
-
-            if (generatedKeys.next()) {
-                url.setId(generatedKeys.getLong(1));
-            } else {
-                throw new SQLException("DB have not returned an id after saving an entity");
+            try (var keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    url.setId(keys.getLong(1));
+                    return url;
+                } else {
+                    throw new SQLException("Database didn't return an ID after saving the entity");
+                }
             }
+
+        } catch (SQLException e) {
+            log.error("Error saving URL: {}", url.getName(), e);
+            throw e;
         }
     }
 
     public static List<Url> getEntities() throws SQLException {
-        var sql = "SELECT * FROM urls";
+        var sql = "SELECT id, name, created_at FROM urls";
+        var result = new ArrayList<Url>();
 
         try (
                 var conn = dataSource.getConnection();
-                var stmt = conn.prepareStatement(sql)
+                var stmt = conn.prepareStatement(sql);
+                var rs = stmt.executeQuery()
         ) {
-            var resultSet = stmt.executeQuery();
-            var result = new ArrayList<Url>();
-
-            while (resultSet.next()) {
-                var id = resultSet.getLong("id");
-                var name = resultSet.getString("name");
-                var createdAt = resultSet.getTimestamp("created_at");
-                var url = new Url(name, createdAt);
-                url.setId(id);
-                result.add(url);
+            while (rs.next()) {
+                result.add(map(rs));
             }
 
-            return result;
+        } catch (SQLException e) {
+            log.error("Error fetching URLs", e);
+            throw e;
         }
+
+        return result;
     }
 
     public static Optional<Url> find(Long id) throws SQLException {
-        var sql = "SELECT * FROM urls WHERE id = ?";
+        var sql = "SELECT id, name, created_at FROM urls WHERE id = ?";
 
         try (
                 var conn = dataSource.getConnection();
                 var stmt = conn.prepareStatement(sql)
         ) {
             stmt.setLong(1, id);
-            var resultSet = stmt.executeQuery();
 
-            if (resultSet.next()) {
-                var name = resultSet.getString("name");
-                var createdAt = resultSet.getTimestamp("created_at");
-                var url = new Url(name, createdAt);
-                url.setId(id);
-                return Optional.of(url);
+            try (var rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(map(rs));
+                }
             }
 
-            return Optional.empty();
+        } catch (SQLException e) {
+            log.error("Error fetching URL by id={}", id, e);
+            throw e;
         }
+
+        return Optional.empty();
     }
 
-    public static boolean existsByName(String name) throws SQLException {
-        var sql = "SELECT * FROM urls WHERE name = ?";
-
-        try (
-                var conn = dataSource.getConnection();
-                var stmt = conn.prepareStatement(sql)
-        ) {
-            stmt.setString(1, name);
-            var resultSet = stmt.executeQuery();
-
-            return resultSet.next();
-        }
+    private static Url map(java.sql.ResultSet rs) throws SQLException {
+        var id = rs.getLong("id");
+        var name = rs.getString("name");
+        var createdAt = rs.getTimestamp("created_at");
+        var url = new Url(name, createdAt);
+        url.setId(id);
+        return url;
     }
 }
