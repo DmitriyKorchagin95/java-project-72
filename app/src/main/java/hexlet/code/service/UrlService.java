@@ -8,7 +8,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 @Slf4j
-public class UrlService {
+public final class UrlService {
+
+    private UrlService() {
+    }
+
     public static boolean create(String normalizedUrl) throws SQLException {
         var url = new Url(normalizedUrl, new Timestamp(System.currentTimeMillis()));
 

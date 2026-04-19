@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.SQLException;
 
 @Slf4j
-public class ChecksController {
+public final class ChecksController {
+
+    private ChecksController() {
+    }
 
     public static void create(Context ctx) throws SQLException {
         var urlId = ctx.pathParamAsClass("id", Long.class).get();

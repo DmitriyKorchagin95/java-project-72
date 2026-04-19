@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Slf4j
 public class UrlRepository extends BaseRepository {
+
     public static Url save(Url url) throws SQLException {
         var sql = "INSERT INTO urls (name) VALUES (?)";
 

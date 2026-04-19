@@ -19,7 +19,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class UrlsController {
+public final class UrlsController {
+
+    private UrlsController() {
+    }
+
     public static void index(Context ctx) throws SQLException {
         log.debug("Handling GET /urls");
 

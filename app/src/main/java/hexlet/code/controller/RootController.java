@@ -5,7 +5,11 @@ import io.javalin.http.Context;
 
 import java.util.Map;
 
-public class RootController {
+public final class RootController {
+
+    private RootController() {
+    }
+
     public static void index(Context ctx) {
         var page = new MainPage();
         page.setFlash(ctx.consumeSessionAttribute("flash"));

@@ -12,7 +12,11 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 @Slf4j
-public class CheckService {
+public final class CheckService {
+
+    private CheckService() {
+    }
+
     public static boolean checkUrl(Long urlId, String urlName) throws SQLException {
         log.info("Checking URL: id={}, url={}", urlId, urlName);
 

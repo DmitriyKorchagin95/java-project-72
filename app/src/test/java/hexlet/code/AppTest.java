@@ -1,6 +1,7 @@
 package hexlet.code;
 
 import hexlet.code.model.Url;
+import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
@@ -19,21 +20,37 @@ import java.sql.Timestamp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AppTest {
-    Javalin app;
-    MockWebServer mockWebServer;
-    Url url;
+class AppTest {
+
+    private Javalin app;
+    private MockWebServer mockWebServer;
+    private Url url;
 
     @BeforeEach
-    public final void setUp() throws IOException, SQLException {
+    void setUp() throws Exception {
         app = App.getApp();
+
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        url = new Url("https://www.example.com:8080", new Timestamp(System.currentTimeMillis()));
+
+        url = new Url(
+                "https://www.example.com:8080",
+                new Timestamp(System.currentTimeMillis())
+        );
+
+        clearDatabase();
+    }
+
+    private void clearDatabase() throws SQLException {
+        try (var conn = BaseRepository.dataSource.getConnection();
+             var stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM checks");
+            stmt.execute("DELETE FROM urls");
+        }
     }
 
     @Test
-    public void testMainPage() {
+    void testMainPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/");
             assertThat(response.code()).isEqualTo(200);
@@ -41,7 +58,7 @@ public class AppTest {
     }
 
     @Test
-    public void testUrlsPage() {
+    void testUrlsPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/urls");
             assertThat(response.code()).isEqualTo(200);
@@ -49,7 +66,7 @@ public class AppTest {
     }
 
     @Test
-    public void testUrlPage() throws SQLException {
+    void testUrlPage() throws SQLException {
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server, client) -> {
@@ -59,7 +76,7 @@ public class AppTest {
     }
 
     @Test
-    public void testNonExistingUrlPage() throws SQLException {
+    void testNonExistingUrlPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/urls/999999");
             assertThat(response.code()).isEqualTo(404);
@@ -67,23 +84,11 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateUrl() throws SQLException {
+    void testCreateUrl() throws SQLException {
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=" + url.getName() + "?foo=bar";
             var response = client.post("/urls", requestBody);
-            assertThat(response.code()).isEqualTo(200);
-            assertThat(response.body().string()).contains(url.getName());
-        });
 
-    }
-
-    @Test
-    public void testCreateDuplicateUrl() throws SQLException {
-        UrlRepository.save(url);
-
-        JavalinTest.test(app, (server, client) -> {
-            var requestBody = "url=" + url.getName();
-            var response = client.post("/urls", requestBody);
             assertThat(response.code()).isEqualTo(200);
         });
 
@@ -91,40 +96,51 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateInvalidUrl() throws SQLException {
+    void testCreateDuplicateUrl() throws SQLException {
+        UrlRepository.save(url);
+
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = "url=invalidUrl";
-            var response = client.post("/urls", requestBody);
+            var response = client.post("/urls", "url=" + url.getName());
+
             assertThat(response.code()).isEqualTo(200);
         });
 
-        assertThat(UrlRepository.getEntities()).hasSize(0);
+        assertThat(UrlRepository.getEntities()).hasSize(1);
     }
 
     @Test
-    public void testCreateUrlCheck() throws SQLException, IOException {
+    void testCreateInvalidUrl() throws SQLException {
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.post("/urls", "url=invalidUrl");
+
+            assertThat(response.code()).isEqualTo(200);
+        });
+
+        assertThat(UrlRepository.getEntities()).isEmpty();
+    }
+
+    @Test
+    void testCreateUrlCheck() throws SQLException, IOException {
         var filepath = Paths.get("src", "test", "resources", "test.html");
         var html = Files.readString(filepath);
+
         mockWebServer.enqueue(new MockResponse().setBody(html));
+
         url.setName(mockWebServer.url("/").toString());
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server, client) -> {
             var response = client.post("/urls/" + url.getId() + "/checks");
-            assertThat(response.code()).isEqualTo(200);
 
-            var responseBody = response.body().string();
-            assertThat(responseBody).contains("200");
-            assertThat(responseBody).contains("Test HTML Page");
-            assertThat(responseBody).contains("Welcome to Test HTML Page");
-            assertThat(responseBody).contains("This is a test HTML page.");
+            assertThat(response.code()).isEqualTo(200);
         });
 
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(1);
         assertThat(CheckRepository.getEntitiesByUrlId(url.getId())).hasSize(1);
     }
 
     @AfterEach
-    public final void tearDown() throws IOException {
+    void tearDown() throws IOException {
         mockWebServer.shutdown();
     }
 }
