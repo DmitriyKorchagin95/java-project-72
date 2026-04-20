@@ -33,7 +33,7 @@ public final class ChecksController {
         if (success) {
             setFlash(ctx, "Страница успешно проверена", "success");
         } else {
-            setFlash(ctx, "Некорректный адрес", "danger");
+            setFlash(ctx, "Ошибка проверки", "danger");
         }
 
         ctx.redirect(NamedRoutes.urlPath(urlId));

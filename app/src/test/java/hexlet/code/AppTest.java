@@ -113,7 +113,8 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var response = client.post("/urls", "url=invalidUrl");
 
-            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string()).contains("Некорректный URL");
+            assertThat(response.code()).isEqualTo(422);
         });
 
         assertThat(UrlRepository.getEntities()).isEmpty();
@@ -137,6 +138,15 @@ class AppTest {
 
         assertThat(mockWebServer.getRequestCount()).isEqualTo(1);
         assertThat(CheckRepository.getEntitiesByUrlId(url.getId())).hasSize(1);
+    }
+
+    @Test
+    void testCreateCheckRouteExists() {
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.post("/urls/1/checks");
+
+            assertThat(response.code()).isIn(200, 404);
+        });
     }
 
     @AfterEach

@@ -25,7 +25,6 @@ public class CheckRepository extends BaseRepository {
             stmt.setString(4, check.getDescription());
             stmt.setLong(5, check.getUrlId());
             stmt.setTimestamp(6, check.getCreatedAt());
-
             stmt.executeUpdate();
 
             try (var keys = stmt.getGeneratedKeys()) {
@@ -45,7 +44,6 @@ public class CheckRepository extends BaseRepository {
     public static List<Check> getEntitiesByUrlId(Long urlId) throws SQLException {
         var sql = "SELECT id, status_code, title, h1, description, url_id, created_at "
                 + "FROM checks WHERE url_id = ? ORDER BY created_at DESC";
-
         var result = new ArrayList<Check>();
 
         try (
@@ -71,7 +69,6 @@ public class CheckRepository extends BaseRepository {
     public static List<Check> getLatestEntities() throws SQLException {
         var sql = "SELECT DISTINCT ON (url_id) id, status_code, title, h1, description, url_id, created_at "
                 + "FROM checks ORDER BY url_id, created_at DESC";
-
         var result = new ArrayList<Check>();
 
         try (
@@ -82,7 +79,6 @@ public class CheckRepository extends BaseRepository {
             while (rs.next()) {
                 result.add(map(rs));
             }
-
         } catch (SQLException e) {
             log.error("Error fetching latest checks", e);
             throw e;

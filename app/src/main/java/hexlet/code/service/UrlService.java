@@ -13,20 +13,19 @@ public final class UrlService {
     private UrlService() {
     }
 
-    public static boolean create(String normalizedUrl) throws SQLException {
+    public static Url create(String normalizedUrl) throws SQLException {
         var url = new Url(normalizedUrl, new Timestamp(System.currentTimeMillis()));
-
         log.debug("Saving URL: {}", normalizedUrl);
 
         try {
-            UrlRepository.save(url);
-            log.info("URL saved: id={}, name={}", url.getId(), url.getName());
-            return true;
-
+            var saved = UrlRepository.save(url);
+            log.info("URL saved: id={}, name={}", saved.getId(), saved.getName());
+            return saved;
         } catch (SQLException e) {
+
             if ("23505".equals(e.getSQLState())) {
                 log.warn("Duplicate URL: {}", normalizedUrl);
-                return false;
+                return null;
             }
 
             log.error("DB error while saving URL: {}", normalizedUrl, e);

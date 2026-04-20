@@ -38,7 +38,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getEntities() throws SQLException {
-        var sql = "SELECT id, name, created_at FROM urls";
+        var sql = "SELECT id, name, created_at FROM urls ORDER BY created_at DESC";
         var result = new ArrayList<Url>();
 
         try (

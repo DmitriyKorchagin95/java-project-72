@@ -1,4 +1,5 @@
 @import hexlet.code.util.NamedRoutes
+@import hexlet.code.util.StringUtils
 @import java.text.SimpleDateFormat
 @import hexlet.code.dto.root.urls.UrlPage
 @param UrlPage page
@@ -45,9 +46,9 @@ content = @`
                 <tr>
                     <td>${check.getId()}</td>
                     <td>${check.getStatusCode()}</td>
-                    <td>${check.getTitle()}</td>
-                    <td>${check.getH1()}</td>
-                    <td>${check.getDescription()}</td>
+                    <td>${StringUtils.truncate(check.getTitle(), 200)}</td>
+                    <td>${StringUtils.truncate(check.getH1(), 200)}</td>
+                    <td>${StringUtils.truncate(check.getDescription(), 200)}</td>
                     <td>${new SimpleDateFormat("dd/MM/yyyy HH:mm").format(check.getCreatedAt())}</td>
                 </tr>
             @endfor

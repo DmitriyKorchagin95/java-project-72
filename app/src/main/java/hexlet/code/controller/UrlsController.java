@@ -64,12 +64,12 @@ public final class UrlsController {
 
         try {
             var normalizedUrl = UrlUtils.normalizeUrl(rawUrl);
-            var created = UrlService.create(normalizedUrl);
+            var url = UrlService.create(normalizedUrl);
 
-            if (created) {
+            if (url != null) {
                 setFlash(ctx, "Страница успешно добавлена", "success");
-                log.info("URL created: {}", normalizedUrl);
-                ctx.redirect(NamedRoutes.urlsPath());
+                log.info("URL created: id={}, url={}", url.getId(), normalizedUrl);
+                ctx.redirect(NamedRoutes.urlPath(url.getId()));
             } else {
                 setFlash(ctx, "Страница уже существует", "danger");
                 log.warn("Duplicate URL attempt: {}", normalizedUrl);
@@ -78,6 +78,14 @@ public final class UrlsController {
 
         } catch (IllegalArgumentException | MalformedURLException | URISyntaxException e) {
             log.warn("Invalid URL: {}", rawUrl, e);
+            var accept = ctx.header("Accept");
+
+            if (accept == null || !accept.contains("text/html")) {
+                ctx.status(422);
+                ctx.result("Некорректный URL");
+                return;
+            }
+
             setFlash(ctx, "Некорректный URL", "danger");
             ctx.redirect(NamedRoutes.mainPath());
         }
