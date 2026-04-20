@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import hexlet.code.dto.root.MainPage;
 import hexlet.code.dto.root.urls.UrlPage;
 import hexlet.code.dto.root.urls.UrlsPage;
 import hexlet.code.model.Check;
@@ -64,35 +65,30 @@ public final class UrlsController {
 
         try {
             var normalizedUrl = UrlUtils.normalizeUrl(rawUrl);
+            var existing = UrlRepository.findByName(normalizedUrl);
             var url = UrlService.create(normalizedUrl);
 
-            if (url != null) {
-                setFlash(ctx, "Страница успешно добавлена", "success");
-                log.info("URL created: id={}, url={}", url.getId(), normalizedUrl);
-                ctx.redirect(NamedRoutes.urlPath(url.getId()));
-            } else {
-                setFlash(ctx, "Страница уже существует", "danger");
+            if (existing.isPresent()) {
+                ctx.sessionAttribute("flash", "Страница уже существует");
+                        ctx.sessionAttribute("flashType", "danger");
                 log.warn("Duplicate URL attempt: {}", normalizedUrl);
-                ctx.redirect(NamedRoutes.mainPath());
+            } else {
+                ctx.sessionAttribute("flash", "Страница успешно добавлена");
+                ctx.sessionAttribute("flashType", "success");
+                log.info("URL created: id={}, url={}", url.getId(), normalizedUrl);
             }
+
+            ctx.redirect(NamedRoutes.urlPath(url.getId()));
 
         } catch (IllegalArgumentException | MalformedURLException | URISyntaxException e) {
             log.warn("Invalid URL: {}", rawUrl, e);
-            var accept = ctx.header("Accept");
 
-            if (accept == null || !accept.contains("text/html")) {
-                ctx.status(422);
-                ctx.result("Некорректный URL");
-                return;
-            }
+            ctx.status(422);
+            var page = new MainPage();
+            page.setFlash("Некорректный URL");
+            page.setFlashType("danger");
 
-            setFlash(ctx, "Некорректный URL", "danger");
-            ctx.redirect(NamedRoutes.mainPath());
+            ctx.render("index.jte", Map.of("page", page));
         }
-    }
-
-    private static void setFlash(Context ctx, String message, String type) {
-        ctx.sessionAttribute("flash", message);
-        ctx.sessionAttribute("flashType", type);
     }
 }

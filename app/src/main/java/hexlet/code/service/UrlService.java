@@ -21,11 +21,14 @@ public final class UrlService {
             var saved = UrlRepository.save(url);
             log.info("URL saved: id={}, name={}", saved.getId(), saved.getName());
             return saved;
-        } catch (SQLException e) {
 
+        } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
                 log.warn("Duplicate URL: {}", normalizedUrl);
-                return null;
+
+                return UrlRepository.findByName(normalizedUrl)
+                        .orElseThrow(() ->
+                                new SQLException("URL exists but not found in DB"));
             }
 
             log.error("DB error while saving URL: {}", normalizedUrl, e);

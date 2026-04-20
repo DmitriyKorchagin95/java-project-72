@@ -1,7 +1,6 @@
 package hexlet.code.repository;
 
 import hexlet.code.model.Url;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 public class UrlRepository extends BaseRepository {
 
     public static Url save(Url url) throws SQLException {
@@ -30,10 +28,6 @@ public class UrlRepository extends BaseRepository {
                     throw new SQLException("Database didn't return an ID after saving the entity");
                 }
             }
-
-        } catch (SQLException e) {
-            log.error("Error saving URL: {}", url.getName(), e);
-            throw e;
         }
     }
 
@@ -49,10 +43,6 @@ public class UrlRepository extends BaseRepository {
             while (rs.next()) {
                 result.add(map(rs));
             }
-
-        } catch (SQLException e) {
-            log.error("Error fetching URLs", e);
-            throw e;
         }
 
         return result;
@@ -72,10 +62,25 @@ public class UrlRepository extends BaseRepository {
                     return Optional.of(map(rs));
                 }
             }
+        }
 
-        } catch (SQLException e) {
-            log.error("Error fetching URL by id={}", id, e);
-            throw e;
+        return Optional.empty();
+    }
+
+    public static Optional<Url> findByName(String name) throws SQLException {
+        var sql = "SELECT id, name, created_at FROM urls WHERE name = ?";
+
+        try (
+                var conn = dataSource.getConnection();
+                var stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setString(1, name);
+
+            try (var rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(map(rs));
+                }
+            }
         }
 
         return Optional.empty();
@@ -85,8 +90,10 @@ public class UrlRepository extends BaseRepository {
         var id = rs.getLong("id");
         var name = rs.getString("name");
         var createdAt = rs.getTimestamp("created_at");
+
         var url = new Url(name, createdAt);
         url.setId(id);
+
         return url;
     }
 }
