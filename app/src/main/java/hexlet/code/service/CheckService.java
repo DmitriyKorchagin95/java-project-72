@@ -2,6 +2,7 @@ package hexlet.code.service;
 
 import hexlet.code.model.Check;
 import hexlet.code.repository.CheckRepository;
+import hexlet.code.util.StringUtils;
 import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -25,12 +26,14 @@ public final class CheckService {
             var statusCode = response.getStatus();
             var body = response.getBody();
             var doc = Jsoup.parse(body != null ? body : "");
-            var title = doc.title();
+            var title = StringUtils.truncate(doc.title(), 200);
             var h1 = Optional.ofNullable(doc.selectFirst("h1"))
                     .map(Element::text)
+                    .map(text -> StringUtils.truncate(text, 200))
                     .orElse(null);
             var description = Optional.ofNullable(doc.selectFirst("meta[name=description]"))
                     .map(tag -> tag.attr("content"))
+                    .map(content -> StringUtils.truncate(content, 200))
                     .orElse(null);
 
             var check = new Check(
