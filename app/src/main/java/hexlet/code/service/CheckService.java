@@ -21,10 +21,11 @@ public final class CheckService {
         log.info("Checking URL: id={}, url={}", urlId, urlName);
 
         try {
+            Unirest.config().connectTimeout(5000);
             var response = Unirest.get(urlName).asString();
             var statusCode = response.getStatus();
-            var body = response.getBody();
-            var doc = body != null ? Jsoup.parse(body) : Jsoup.parse("");
+            var body = response.getBody() != null ? response.getBody() : "";
+            var doc = Jsoup.parse(body);
             var title = doc.title();
             var h1 = Optional.ofNullable(doc.selectFirst("h1"))
                     .map(Element::text)
@@ -45,7 +46,6 @@ public final class CheckService {
             CheckRepository.save(check);
             log.info("Check saved: urlId={}, status={}", urlId, statusCode);
             return true;
-
         } catch (Exception e) {
             log.warn("Failed to check URL: {}", urlName, e);
             return false;

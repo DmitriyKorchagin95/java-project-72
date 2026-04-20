@@ -8,7 +8,7 @@
 page = page,
 content = @`
     <div class="container-lg mt-5">
-        <h1>Сайт: https://www.example.com</h1>
+        <h1>Сайт: ${page.getUrl().getName()}</h1>
 
         <table data-test="url" class="table table-bordered table-hover mt-3">
             <tbody>
@@ -28,6 +28,7 @@ content = @`
         </table>
 
         <h2 class="mt-5">Проверки</h2>
+
         <form method="post" action="${NamedRoutes.checksPath(page.getUrl().getId())}">
             <input type="submit" class="btn btn-primary" value="Запустить проверку">
         </form>

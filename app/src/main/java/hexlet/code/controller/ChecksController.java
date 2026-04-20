@@ -28,9 +28,11 @@ public final class ChecksController {
         var success = CheckService.checkUrl(urlId, url.getName());
 
         if (success) {
+            log.info("Check successful: urlId={}", urlId);
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.sessionAttribute("flashType", "success");
         } else {
+            log.warn("Check failed: urlId={}", urlId);
             ctx.sessionAttribute("flash", "Ошибка проверки");
             ctx.sessionAttribute("flashType", "danger");
         }
