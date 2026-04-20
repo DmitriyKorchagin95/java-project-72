@@ -70,7 +70,7 @@ public final class UrlsController {
 
             if (existing.isPresent()) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
-                        ctx.sessionAttribute("flashType", "danger");
+                ctx.sessionAttribute("flashType", "danger");
                 log.warn("Duplicate URL attempt: {}", normalizedUrl);
             } else {
                 ctx.sessionAttribute("flash", "Страница успешно добавлена");
