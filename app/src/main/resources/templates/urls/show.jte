@@ -46,8 +46,8 @@ content = @`
                 <tr>
                     <td>${check.getId()}</td>
                     <td>${check.getStatusCode()}</td>
-                    <td>${StringUtils.truncate(check.getTitle(), 200)}</td>
                     <td>${StringUtils.truncate(check.getH1(), 200)}</td>
+                    <td>${StringUtils.truncate(check.getTitle(), 200)}</td>
                     <td>${StringUtils.truncate(check.getDescription(), 200)}</td>
                     <td>${new SimpleDateFormat("dd/MM/yyyy HH:mm").format(check.getCreatedAt())}</td>
                 </tr>
