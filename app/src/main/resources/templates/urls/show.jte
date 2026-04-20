@@ -36,8 +36,8 @@ content = @`
             <thead>
             <th>ID</th>
             <th>Код ответа</th>
-            <th>title</th>
             <th>h1</th>
+            <th>title</th>
             <th>description</th>
             <th>Дата проверки</th>
             </thead>
