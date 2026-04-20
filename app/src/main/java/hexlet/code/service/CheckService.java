@@ -24,7 +24,7 @@ public final class CheckService {
             var response = Unirest.get(urlName).asString();
             var statusCode = response.getStatus();
             var body = response.getBody();
-            var doc = Jsoup.parse(body);
+            var doc = body != null ? Jsoup.parse(body) : Jsoup.parse("");
             var title = doc.title();
             var h1 = Optional.ofNullable(doc.selectFirst("h1"))
                     .map(Element::text)

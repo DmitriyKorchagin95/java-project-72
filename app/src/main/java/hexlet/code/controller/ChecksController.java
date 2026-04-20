@@ -17,9 +17,8 @@ public final class ChecksController {
 
     public static void create(Context ctx) throws SQLException {
         var urlId = ctx.pathParamAsClass("id", Long.class).get();
-
         log.info("POST /urls/{}/checks", urlId);
-
+        
         var url = UrlRepository.find(urlId)
                 .orElseThrow(() -> {
                     log.warn("URL not found: id={}", urlId);
@@ -31,16 +30,13 @@ public final class ChecksController {
         var success = CheckService.checkUrl(urlId, url.getName());
 
         if (success) {
-            setFlash(ctx, "Страница успешно проверена", "success");
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.sessionAttribute("flashType", "success");
         } else {
-            setFlash(ctx, "Ошибка проверки", "danger");
+            ctx.sessionAttribute("flash", "Ошибка проверки");
+            ctx.sessionAttribute("flashType", "danger");
         }
 
         ctx.redirect(NamedRoutes.urlPath(urlId));
-    }
-
-    private static void setFlash(Context ctx, String message, String type) {
-        ctx.sessionAttribute("flash", message);
-        ctx.sessionAttribute("flashType", type);
     }
 }
