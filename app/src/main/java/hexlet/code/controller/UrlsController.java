@@ -46,7 +46,7 @@ public final class UrlsController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         log.debug("Handling GET /urls/{}", id);
 
-        var url = UrlRepository.find(id)
+        var url = UrlRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("URL not found: id={}", id);
                     return new NotFoundResponse(String.format("Entity with id %d not found", id));
