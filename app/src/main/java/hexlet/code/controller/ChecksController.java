@@ -18,7 +18,7 @@ public final class ChecksController {
     public static void create(Context ctx) throws SQLException {
         var urlId = ctx.pathParamAsClass("id", Long.class).get();
         log.info("POST /urls/{}/checks", urlId);
-        var url = UrlRepository.find(urlId)
+        var url = UrlRepository.findById(urlId)
                 .orElseThrow(() -> {
                     log.warn("URL not found: id={}", urlId);
                     return new NotFoundResponse(

@@ -21,11 +21,10 @@ public final class CheckService {
         log.info("Checking URL: id={}, url={}", urlId, urlName);
 
         try {
-            Unirest.config().connectTimeout(5000);
             var response = Unirest.get(urlName).asString();
             var statusCode = response.getStatus();
-            var body = response.getBody() != null ? response.getBody() : "";
-            var doc = Jsoup.parse(body);
+            var body = response.getBody();
+            var doc = Jsoup.parse(body != null ? body : "");
             var title = doc.title();
             var h1 = Optional.ofNullable(doc.selectFirst("h1"))
                     .map(Element::text)

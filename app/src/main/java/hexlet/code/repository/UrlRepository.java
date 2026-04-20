@@ -48,7 +48,7 @@ public class UrlRepository extends BaseRepository {
         return result;
     }
 
-    public static Optional<Url> find(Long id) throws SQLException {
+    public static Optional<Url> findById(Long id) throws SQLException {
         var sql = "SELECT id, name, created_at FROM urls WHERE id = ?";
 
         try (
