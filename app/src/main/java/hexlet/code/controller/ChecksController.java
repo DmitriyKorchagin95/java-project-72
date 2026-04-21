@@ -33,7 +33,7 @@ public final class ChecksController {
             ctx.sessionAttribute("flashType", "success");
         } else {
             log.warn("Check failed: urlId={}", urlId);
-            ctx.sessionAttribute("flash", "Ошибка проверки");
+            ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
             ctx.sessionAttribute("flashType", "danger");
         }
 

@@ -24,6 +24,12 @@ public final class CheckService {
         try {
             var response = Unirest.get(urlName).asString();
             var statusCode = response.getStatus();
+
+            if (statusCode < 200 || statusCode >= 300) {
+                log.warn("Non-success status code: {}", statusCode);
+                return false;
+            }
+
             var body = response.getBody();
             var doc = Jsoup.parse(body != null ? body : "");
             var title = StringUtils.truncate(doc.title(), 200);
