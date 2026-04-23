@@ -1,5 +1,5 @@
 @import hexlet.code.util.NamedRoutes
-@import java.text.SimpleDateFormat
+@import java.time.format.DateTimeFormatter
 @import hexlet.code.dto.root.urls.UrlsPage
 @param UrlsPage page
 
@@ -28,7 +28,7 @@ content = @`
                     </td>
 
                     @if (latestCheck != null)
-                        <td>${new SimpleDateFormat("dd/MM/yyyy HH:mm").format(latestCheck.getCreatedAt())}</td>
+                        <td>${latestCheck.getCreatedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}</td>
                         <td>${latestCheck.getStatusCode()}</td>
                     @else
                         <td></td>
