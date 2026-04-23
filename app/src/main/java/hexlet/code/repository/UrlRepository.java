@@ -2,6 +2,7 @@ package hexlet.code.repository;
 
 import hexlet.code.model.Url;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -86,14 +87,12 @@ public class UrlRepository extends BaseRepository {
         return Optional.empty();
     }
 
-    private static Url map(java.sql.ResultSet rs) throws SQLException {
+    private static Url map(ResultSet rs) throws SQLException {
         var id = rs.getLong("id");
         var name = rs.getString("name");
-        var createdAt = rs.getTimestamp("created_at");
-
-        var url = new Url(name, createdAt);
+        var url = new Url(name);
+        url.setCreatedAt(rs.getTimestamp("created_At").toLocalDateTime());
         url.setId(id);
-
         return url;
     }
 }

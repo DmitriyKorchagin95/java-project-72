@@ -9,7 +9,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Optional;
 
 @Slf4j
@@ -47,8 +46,7 @@ public final class CheckService {
                     title,
                     h1,
                     description,
-                    urlId,
-                    new Timestamp(System.currentTimeMillis())
+                    urlId
             );
 
             CheckRepository.save(check);

@@ -6,5 +6,5 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class MainPage extends BasePage {
+public class RootPage extends BasePage {
 }

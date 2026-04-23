@@ -8,8 +8,11 @@ import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.ChecksController;
 import hexlet.code.controller.RootController;
 import hexlet.code.controller.UrlsController;
+import hexlet.code.dto.root.RootPage;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
+import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,7 +54,7 @@ public class App {
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getDatabaseUrl());
-        hikariConfig.setMaximumPoolSize(4);
+        hikariConfig.setMaximumPoolSize(5);
 
         var dataSource = new HikariDataSource(hikariConfig);
 
@@ -63,6 +67,15 @@ public class App {
         BaseRepository.dataSource = dataSource;
 
         var app = Javalin.create(config -> config.fileRenderer(new JavalinJte(createTemplateEngine())));
+
+        app.exception(NotFoundResponse.class, (e, ctx) -> {
+            log.info(e.getMessage());
+            ctx.status(HttpStatus.NOT_FOUND);
+            var page = new RootPage();
+            page.setFlash("Ресурс не найдет");
+            page.setFlashType("danger");
+            ctx.render("index.jte", Map.of("page", page));
+        });
 
         app.get("/", RootController::index);
         app.get("/urls", UrlsController::index);

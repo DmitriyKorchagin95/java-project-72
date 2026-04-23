@@ -5,7 +5,6 @@ import hexlet.code.repository.UrlRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 @Slf4j
 public final class UrlService {
@@ -14,7 +13,7 @@ public final class UrlService {
     }
 
     public static Url create(String normalizedUrl) throws SQLException {
-        var url = new Url(normalizedUrl, new Timestamp(System.currentTimeMillis()));
+        var url = new Url(normalizedUrl);
         log.debug("Saving URL: {}", normalizedUrl);
 
         try {

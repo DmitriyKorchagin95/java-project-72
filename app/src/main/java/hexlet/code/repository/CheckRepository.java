@@ -3,6 +3,7 @@ package hexlet.code.repository;
 import hexlet.code.model.Check;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -12,8 +13,8 @@ import java.util.List;
 public class CheckRepository extends BaseRepository {
 
     public static void save(Check check) throws SQLException {
-        var sql = "INSERT INTO checks (status_code, title, h1, description, url_id, created_at) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        var sql = "INSERT INTO checks (status_code, title, h1, description, url_id) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
         try (
                 var conn = dataSource.getConnection();
@@ -24,7 +25,6 @@ public class CheckRepository extends BaseRepository {
             stmt.setString(3, check.getH1());
             stmt.setString(4, check.getDescription());
             stmt.setLong(5, check.getUrlId());
-            stmt.setTimestamp(6, check.getCreatedAt());
             stmt.executeUpdate();
 
             try (var keys = stmt.getGeneratedKeys()) {
@@ -87,15 +87,15 @@ public class CheckRepository extends BaseRepository {
         return result;
     }
 
-    private static Check map(java.sql.ResultSet rs) throws SQLException {
+    private static Check map(ResultSet rs) throws SQLException {
         var id = rs.getLong("id");
         var statusCode = rs.getInt("status_code");
         var title = rs.getString("title");
         var h1 = rs.getString("h1");
         var description = rs.getString("description");
         var urlId = rs.getLong("url_id");
-        var createdAt = rs.getTimestamp("created_at");
-        var check = new Check(statusCode, title, h1, description, urlId, createdAt);
+        var check = new Check(statusCode, title, h1, description, urlId);
+        check.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         check.setId(id);
         return check;
     }

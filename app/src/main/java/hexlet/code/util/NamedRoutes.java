@@ -7,7 +7,7 @@ public final class NamedRoutes {
     private NamedRoutes() {
     }
 
-    public static String mainPath() {
+    public static String rootPath() {
         return MAIN_PATH;
     }
 

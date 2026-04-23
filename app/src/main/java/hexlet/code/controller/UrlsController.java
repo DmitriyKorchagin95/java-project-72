@@ -1,6 +1,6 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.root.MainPage;
+import hexlet.code.dto.root.RootPage;
 import hexlet.code.dto.root.urls.UrlPage;
 import hexlet.code.dto.root.urls.UrlsPage;
 import hexlet.code.model.Check;
@@ -10,11 +10,10 @@ import hexlet.code.service.UrlService;
 import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.UrlUtils;
 import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,33 +61,33 @@ public final class UrlsController {
     public static void create(Context ctx) throws SQLException {
         var rawUrl = ctx.formParam("url");
         log.info("Handling POST /urls, input={}", rawUrl);
+        String normalizedUrl;
 
         try {
-            var normalizedUrl = UrlUtils.normalizeUrl(rawUrl);
-            var existing = UrlRepository.findByName(normalizedUrl);
-            var url = UrlService.create(normalizedUrl);
-
-            if (existing.isPresent()) {
-                ctx.sessionAttribute("flash", "Страница уже существует");
-                ctx.sessionAttribute("flashType", "danger");
-                log.warn("Duplicate URL attempt: {}", normalizedUrl);
-            } else {
-                ctx.sessionAttribute("flash", "Страница успешно добавлена");
-                ctx.sessionAttribute("flashType", "success");
-                log.info("URL created: id={}, url={}", url.getId(), normalizedUrl);
-            }
-
-            ctx.redirect(NamedRoutes.urlPath(url.getId()));
-
-        } catch (IllegalArgumentException | MalformedURLException | URISyntaxException e) {
-            log.warn("Invalid URL: {}", rawUrl, e);
-
-            ctx.status(422);
-            var page = new MainPage();
+            normalizedUrl = UrlUtils.normalizeUrl(rawUrl);
+        } catch (Exception e) {
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
+            var page = new RootPage();
             page.setFlash("Некорректный URL");
             page.setFlashType("danger");
-
             ctx.render("index.jte", Map.of("page", page));
+            return;
         }
+
+        var existing = UrlRepository.findByName(normalizedUrl);
+
+        if (existing.isPresent()) {
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.sessionAttribute("flashType", "danger");
+            log.warn("Duplicate URL attempt: {}", normalizedUrl);
+            ctx.redirect(NamedRoutes.urlPath(existing.get().getId()));
+            return;
+        }
+
+        var url = UrlService.create(normalizedUrl);
+        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        ctx.sessionAttribute("flashType", "success");
+        log.info("URL created: id={}, url={}", url.getId(), normalizedUrl);
+        ctx.redirect(NamedRoutes.urlPath(url.getId()));
     }
 }

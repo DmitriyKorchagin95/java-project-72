@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,21 +16,19 @@ public class Check {
     private String h1;
     private String description;
     private Long urlId;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public Check(
             int statusCode,
             String title,
             String h1,
             String description,
-            Long urlId,
-            Timestamp createdAt
+            Long urlId
     ) {
         this.statusCode = statusCode;
         this.title = title;
         this.h1 = h1;
         this.description = description;
         this.urlId = urlId;
-        this.createdAt = createdAt;
     }
 }
