@@ -23,7 +23,11 @@ public final class ChecksController {
             ctx.sessionAttribute("flashType", "success");
             ctx.redirect(NamedRoutes.urlPath(urlId));
         } catch (SQLException e) {
-            throw new SQLException("Произошла ошибка при проверке", e);
+            ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
+            ctx.sessionAttribute("flashType", "danger");
+            ctx.redirect(NamedRoutes.urlPath(
+                    ctx.pathParamAsClass("id", Long.class).get())
+            );
         } catch (UnirestException e) {
             throw new UnirestException("Ошибка соединения во время проверки", e);
         }
