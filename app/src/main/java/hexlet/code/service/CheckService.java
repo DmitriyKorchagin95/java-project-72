@@ -30,7 +30,7 @@ public final class CheckService {
         var statusCode = response.getStatus();
 
         if (statusCode < HttpStatus.OK.getCode() || statusCode >= HttpStatus.MULTIPLE_CHOICES.getCode()) {
-                throw new NotFoundResponse("Invalid status code: %d".formatted(statusCode));
+            throw new NotFoundResponse("Invalid status code: %d".formatted(statusCode));
         }
 
         var body = response.getBody();
