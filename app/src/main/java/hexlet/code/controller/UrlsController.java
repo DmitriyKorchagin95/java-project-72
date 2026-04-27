@@ -39,27 +39,6 @@ public final class UrlsController {
         }
     }
 
-//    public static void create(Context ctx) throws Exception {
-//        try {
-//            var rawUrl = ctx.formParam("url");
-//            log.info("Handling POST /urls, input={}", rawUrl);
-//            var url = UrlService.createUrl(rawUrl);
-//            ctx.sessionAttribute("flash", "Страница успешно добавлена");
-//            ctx.sessionAttribute("flashType", "success");
-//            log.info("URL created: id={}, url={}", url.getId(), url.getName());
-//            ctx.redirect(NamedRoutes.urlPath(url.getId()));
-//        } catch (SQLException e) {
-//            log.info("URL already exists");
-//            ctx.sessionAttribute("flash", "Страница уже существует");
-//            ctx.sessionAttribute("flashType", "danger");
-//            ctx.redirect(NamedRoutes.urlPath(url.getId()));
-//        } catch (Exception e) {
-//            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-//            throw new Exception("Некорректный URL", e);
-//        }
-//    }
-
-
     public static void create(Context ctx) throws MalformedURLException, SQLException, URISyntaxException {
         var rawUrl = ctx.formParam("url");
         log.info("Handling POST /urls, input={}", rawUrl);
