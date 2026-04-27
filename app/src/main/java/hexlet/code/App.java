@@ -69,11 +69,7 @@ public class App {
 
         app.exception(Exception.class, (e, ctx) -> {
             log.info(e.getMessage());
-
-            if (e.getMessage().equals("Некорректный URL")) {
-                ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-            }
-
+            ctx.status(HttpStatus.NOT_FOUND);
             var page = new RootPage();
             page.setFlash(e.getMessage());
             page.setFlashType("danger");

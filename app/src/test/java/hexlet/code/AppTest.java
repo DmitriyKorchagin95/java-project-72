@@ -104,7 +104,7 @@ class AppTest {
     @Test
     void testCreateInvalidUrl() throws SQLException {
         JavalinTest.test(app, (server, client) -> {
-            var response = client.post("/urls", "url=invalidUrl");
+            var response = client.post("/urls", "url=httpsss://abcabca@test.ru");
 
             assertThat(response.body().string()).contains("Некорректный URL");
             assertThat(response.code()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT.getCode());

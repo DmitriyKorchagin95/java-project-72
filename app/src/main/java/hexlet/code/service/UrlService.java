@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public final class UrlService {
@@ -45,9 +46,15 @@ public final class UrlService {
         return new UrlPage(url, checks);
     }
 
-    public static Url createUrl(String rawUrl) throws SQLException, MalformedURLException, URISyntaxException {
+    public static Url createUrl(String rawUrl) throws MalformedURLException, URISyntaxException, SQLException {
         var normalizedUrl = UrlUtils.normalizeUrl(rawUrl);
         var url = new Url(normalizedUrl);
         return UrlRepository.save(url);
+    }
+
+    public static Optional<Url> urlExistByName(String rawUrl)
+            throws SQLException, MalformedURLException, URISyntaxException {
+        var normalizedUrl = UrlUtils.normalizeUrl(rawUrl);
+        return UrlRepository.findByName(normalizedUrl);
     }
 }
