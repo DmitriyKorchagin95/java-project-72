@@ -12,7 +12,6 @@ import hexlet.code.dto.root.RootPage;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,11 +67,15 @@ public class App {
 
         var app = Javalin.create(config -> config.fileRenderer(new JavalinJte(createTemplateEngine())));
 
-        app.exception(NotFoundResponse.class, (e, ctx) -> {
+        app.exception(Exception.class, (e, ctx) -> {
             log.info(e.getMessage());
-            ctx.status(HttpStatus.NOT_FOUND);
+
+            if (e.getMessage().equals("Некорректный URL")) {
+                ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
+            }
+
             var page = new RootPage();
-            page.setFlash("Ресурс не найдет");
+            page.setFlash(e.getMessage());
             page.setFlashType("danger");
             ctx.render("index.jte", Map.of("page", page));
         });

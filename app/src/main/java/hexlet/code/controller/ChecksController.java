@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.service.CheckService;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
+import kong.unirest.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -14,11 +15,17 @@ public final class ChecksController {
     }
 
     public static void create(Context ctx) throws SQLException {
-        var urlId = ctx.pathParamAsClass("id", Long.class).get();
-        log.info("POST /urls/{}/checks", urlId);
-        var check = CheckService.checkUrl(urlId);
-        ctx.sessionAttribute("flash", check.get("message"));
-        ctx.sessionAttribute("flashType", check.get("type"));
-        ctx.redirect(NamedRoutes.urlPath(urlId));
+        try {
+            var urlId = ctx.pathParamAsClass("id", Long.class).get();
+            log.info("POST /urls/{}/checks", urlId);
+            CheckService.checkUrl(urlId);
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.sessionAttribute("flashType", "success");
+            ctx.redirect(NamedRoutes.urlPath(urlId));
+        } catch (SQLException e) {
+            throw new SQLException("Произошла ошибка при проверке", e);
+        } catch (UnirestException e) {
+            throw new UnirestException("Ошибка соединения во время проверки", e);
+        }
     }
 }

@@ -91,7 +91,7 @@ public class UrlRepository extends BaseRepository {
         var id = rs.getLong("id");
         var name = rs.getString("name");
         var url = new Url(name);
-        url.setCreatedAt(rs.getTimestamp("created_At").toLocalDateTime());
+        url.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         url.setId(id);
         return url;
     }
